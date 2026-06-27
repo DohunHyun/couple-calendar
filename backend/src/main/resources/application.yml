@@ -15,7 +15,7 @@ spring:
       write-dates-as-timestamps: false
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 app:
   push:
@@ -26,8 +26,8 @@ app:
     secret: ${JWT_SECRET:dev-only-insecure-secret-please-override-in-prod-0123456789}
     access-token-minutes: 720
   cors:
-    allowed-origins:
-      - http://localhost:5173
+    # 웹 dev + Capacitor 네이티브 앱(WebView) origin. 배포된 웹 프론트가 있으면 그 도메인도 추가.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,capacitor://localhost,http://localhost,https://localhost}
   oauth:
     kakao:
       client-id: ${KAKAO_CLIENT_ID:}

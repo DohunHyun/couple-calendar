@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "test": "node --test src/utils/*.test.js",
     "cap:sync": "npm run build && npx cap sync",
-    "cap:android": "npx cap open android"
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "axios": "^1.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

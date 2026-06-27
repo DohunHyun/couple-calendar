@@ -118,19 +118,20 @@ OAuth Redirect URI 예시
 기존 React 웹앱을 [Capacitor](https://capacitorjs.com)로 감싸 Android/iOS 네이티브 앱으로 빌드합니다.
 
 - `appId`: `com.couplecalendar.app` · `webDir`: `dist` (`frontend/capacitor.config.json`)
-- Android 네이티브 프로젝트: `frontend/android/` (소스만 커밋, 빌드 산출물은 무시)
+- 네이티브 프로젝트: `frontend/android/`, `frontend/ios/` (소스만 커밋, 빌드 산출물은 무시)
 
 ### 사전 준비
 
 - **Android**: [Android Studio](https://developer.android.com/studio) 설치 (Android SDK 포함). JDK 17/21.
-- **iOS**(맥 전용): Xcode + CocoaPods (`sudo gem install cocoapods`) 설치 후 `npx cap add ios`.
+- **iOS**(맥 전용): **Xcode** 설치 (맥 앱스토어). Capacitor 8은 Swift Package Manager를 쓰므로 **CocoaPods는 불필요**.
 
 ### 빌드/실행
 
 ```bash
 cd frontend
-npm run cap:sync      # 웹 빌드 + 네이티브로 동기화
+npm run cap:sync      # 웹 빌드 + 네이티브로 동기화 (android/ios 모두)
 npm run cap:android   # Android Studio 열기 → Run ▶
+npm run cap:ios       # Xcode 열기 → 시뮬레이터 선택 → Run ▶
 ```
 
 ### 백엔드 연결 (에뮬레이터)
@@ -144,4 +145,4 @@ npm run cap:android   # Android Studio 열기 → Run ▶
 Capacitor 라이브 리로드로 dev 서버에 연결하세요: `capacitor.config.json`의 `server.url`을
 `http://10.0.2.2:5173`로 두고 `npm run dev` 실행.
 
-> 현 단계: Android 네이티브 프로젝트 스캐폴딩 완료. 실제 에뮬레이터/APK 실행은 Android Studio 설치 후 가능.
+> 현 단계: Android/iOS 네이티브 프로젝트 스캐폴딩 완료. 실제 실행은 Android Studio / Xcode 설치 후 가능.

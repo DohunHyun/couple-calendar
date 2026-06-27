@@ -18,6 +18,9 @@ server:
   port: 8080
 
 app:
+  push:
+    # log = 로그 출력(기본). 실제 FCM/APNS 연동 시 별도 PushSender 구현체 추가 후 전환.
+    provider: log
   jwt:
     # 운영에서는 반드시 JWT_SECRET 환경변수로 주입할 것. 아래 값은 로컬 개발 전용 더미.
     secret: ${JWT_SECRET:dev-only-insecure-secret-please-override-in-prod-0123456789}

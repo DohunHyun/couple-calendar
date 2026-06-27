@@ -107,6 +107,7 @@ export default function CalendarGrid({
                 >
                   <div
                     className={`absolute left-2 top-2 text-left text-sm font-semibold leading-none ${dateTone}`}
+                    style={isHoliday ? { color: "#FF0000" } : undefined}
                   >
                     {date.getDate()}
                   </div>

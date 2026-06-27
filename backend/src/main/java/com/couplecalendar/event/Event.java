@@ -59,6 +59,9 @@ public class Event extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private AlertOption alertOption = AlertOption.NONE;
 
+    @Column(nullable = false)
+    private boolean alertSent = false;
+
     @Column(length = 255)
     private String externalEventId;
 
@@ -128,6 +131,14 @@ public class Event extends BaseTimeEntity {
         return alertOption;
     }
 
+    public boolean isAlertSent() {
+        return alertSent;
+    }
+
+    public void markAlertSent() {
+        this.alertSent = true;
+    }
+
     public String getExternalEventId() {
         return externalEventId;
     }
@@ -146,6 +157,7 @@ public class Event extends BaseTimeEntity {
         this.category = category;
         this.hidden = hidden;
         this.alertOption = alertOption;
+        this.alertSent = false;
     }
 
     public void hide() {

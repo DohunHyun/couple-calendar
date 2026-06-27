@@ -112,3 +112,36 @@ OAuth Redirect URI 예시
 4. 일정 생성 확인
 - A 계정에서 Shared 일정 생성 후 B로 전환하면 보여야 합니다.
 - B 계정에서 Private 일정 생성 후 A로 전환하면 보이면 안 됩니다.
+
+## 모바일 앱 (Capacitor)
+
+기존 React 웹앱을 [Capacitor](https://capacitorjs.com)로 감싸 Android/iOS 네이티브 앱으로 빌드합니다.
+
+- `appId`: `com.couplecalendar.app` · `webDir`: `dist` (`frontend/capacitor.config.json`)
+- Android 네이티브 프로젝트: `frontend/android/` (소스만 커밋, 빌드 산출물은 무시)
+
+### 사전 준비
+
+- **Android**: [Android Studio](https://developer.android.com/studio) 설치 (Android SDK 포함). JDK 17/21.
+- **iOS**(맥 전용): Xcode + CocoaPods (`sudo gem install cocoapods`) 설치 후 `npx cap add ios`.
+
+### 빌드/실행
+
+```bash
+cd frontend
+npm run cap:sync      # 웹 빌드 + 네이티브로 동기화
+npm run cap:android   # Android Studio 열기 → Run ▶
+```
+
+### 백엔드 연결 (에뮬레이터)
+
+에뮬레이터에서 `localhost`는 기기 자신을 가리키므로, 호스트의 백엔드는 `http://10.0.2.2:8080/api`로 접근합니다.
+빌드 시 `VITE_API_BASE_URL`을 배포된 백엔드 주소로 지정하세요. (HTTP 사용 시 cleartext 허용 필요)
+
+### 전체 UI를 기기에서 보기 (개발)
+
+프로덕션 빌드에서는 dev 테스트 계정/프리뷰가 숨겨집니다(운영 가드). 기기에서 전체 UI를 보려면
+Capacitor 라이브 리로드로 dev 서버에 연결하세요: `capacitor.config.json`의 `server.url`을
+`http://10.0.2.2:5173`로 두고 `npm run dev` 실행.
+
+> 현 단계: Android 네이티브 프로젝트 스캐폴딩 완료. 실제 에뮬레이터/APK 실행은 Android Studio 설치 후 가능.

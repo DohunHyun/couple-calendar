@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #121212;
+  background: #ffffff;
+  font-family: "SUIT", "Pretendard", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  background: #ffffff;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,25 @@
+# === Secrets / env ===
+.env
+.env.local
+.env.*.local
+
+# === Backend (Spring Boot / Maven) ===
+backend/target/
+*.class
+
+# === Frontend (Vite / React) ===
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === IDE / Editor ===
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# === OS ===
+.DS_Store
+Thumbs.db

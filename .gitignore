@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# === Claude Code 로컬 설정 (머신 로컬, 공유 안 함) ===
+.claude/settings.local.json
+
 # === Backend (Spring Boot / Maven) ===
 backend/target/
 *.class

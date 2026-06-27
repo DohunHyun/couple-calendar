@@ -208,7 +208,7 @@ cd frontend && npm install && npm run dev  # SPA :5173
 - Kakao: `http://localhost:5173/oauth/callback?provider=KAKAO`
 
 ### 설정 주의(`application.yml`)
-JPA `ddl-auto: update`, `open-in-view: false`. **JWT secret·DB 비밀번호 평문** → 운영 전 시크릿 외부화 필요.
+JPA `ddl-auto: update`, `open-in-view: false`. 시크릿은 환경변수로 외부화됨: `JWT_SECRET`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`(미설정 시 로컬 개발용 기본값). **운영에서는 `JWT_SECRET`을 반드시 주입**할 것.
 
 ## 11. 테스트
 
@@ -227,4 +227,4 @@ JPA `ddl-auto: update`, `open-in-view: false`. **JWT secret·DB 비밀번호 평
 | ~~G5~~ | 프리뷰 모드 운영 노출 | ✅ 수정 — "둘러보기"를 `DEV_TEST_ENABLED` 가드 |
 | G6 ⚠️ | 공휴일 빨강 `#FF0000` 아님 | 미해결 — `CalendarGrid:95` |
 | — | `EventService.create`가 `userRepository.findAll()` 사용(비효율) | 미해결 — `EventService.java:86` |
-| — | JWT secret/DB pw 평문 | 미해결 — `application.yml:22` |
+| ~~—~~ | JWT secret/DB pw 평문 | ✅ 수정 — `JWT_SECRET`/`DB_*` 환경변수로 외부화 |

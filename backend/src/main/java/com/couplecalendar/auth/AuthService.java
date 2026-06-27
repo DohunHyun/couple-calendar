@@ -78,6 +78,12 @@ public class AuthService {
         return toAuthResponse(savedUser, setting);
     }
 
+    @Transactional
+    public void updateDeviceToken(User user, String deviceToken) {
+        user.updateDeviceToken(deviceToken);
+        userRepository.save(user);
+    }
+
     @Transactional(readOnly = true)
     public AuthDtos.AuthResponse me(User user) {
         UserSetting setting = userSettingRepository.findByUser(user)

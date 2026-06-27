@@ -16,3 +16,7 @@ export async function fetchMe() {
   const { data } = await client.get("/auth/me");
   return data;
 }
+
+export async function updateDeviceToken(deviceToken) {
+  await client.put("/auth/device-token", { deviceToken });
+}

@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,5 +46,11 @@ public class AuthController {
     public AuthDtos.AuthResponse me(Authentication authentication) {
         User user = currentUser.require(authentication);
         return authService.me(user);
+    }
+
+    @PutMapping("/device-token")
+    public void updateDeviceToken(Authentication authentication, @Valid @RequestBody AuthDtos.DeviceTokenRequest request) {
+        User user = currentUser.require(authentication);
+        authService.updateDeviceToken(user, request.deviceToken());
     }
 }

@@ -15,6 +15,7 @@ import MainCalendarPage from "./pages/MainCalendarPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ProfileSetupPage from "./pages/ProfileSetupPage";
 import SettingsPage from "./pages/SettingsPage";
+import { initPushNotifications } from "./native/push";
 
 function deriveStage(session) {
   if (!session) {
@@ -191,6 +192,17 @@ export default function App() {
     });
     return () => streamRef.current?.close();
   }, [stage, inviteCode]);
+
+  useEffect(() => {
+    if (previewMode || devTestMode) {
+      return;
+    }
+    if (!localStorage.getItem("accessToken")) {
+      return;
+    }
+    // 네이티브 앱에서만 실제로 동작(웹은 no-op). 로그인된 세션에서 디바이스 토큰을 등록.
+    initPushNotifications();
+  }, [session?.userId, previewMode, devTestMode]);
 
   if (stage === "loading") {
     return <main className="min-h-screen bg-white" />;

@@ -43,4 +43,6 @@ public class AuthDtos {
     ) {}
 
     public record OAuthAuthorizeCommand(AuthProvider provider, String redirectUri, String state) {}
+
+    public record DeviceTokenRequest(@NotBlank String deviceToken) {}
 }

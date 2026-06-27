@@ -1,5 +1,7 @@
 # Couple Calendar MVP
 
+[![CI](https://github.com/DohunHyun/couple-calendar/actions/workflows/ci.yml/badge.svg)](https://github.com/DohunHyun/couple-calendar/actions/workflows/ci.yml)
+
 모바일 웹 기반 커플 공유 캘린더 MVP입니다. `frontend`는 React + Tailwind + Axios, `backend`는 Spring Boot + JPA + JWT + SSE, DB는 MySQL 기준입니다.
 
 ## 구조

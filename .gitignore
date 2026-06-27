@@ -27,3 +27,6 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 .claude/launch.json
+
+# === Xcode SPM 해석 상태 (빌드 시 생성) ===
+frontend/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/

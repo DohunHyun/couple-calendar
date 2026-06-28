@@ -20,3 +20,13 @@ export async function deleteEvent(eventId, confirmSharedDelete = false) {
   });
   return data;
 }
+
+export async function syncDeviceCalendar(payload) {
+  const { data } = await client.post("/events/device-sync", payload);
+  return data;
+}
+
+export async function updateEventShare(eventId, shared) {
+  const { data } = await client.patch(`/events/${eventId}/share`, { shared });
+  return data;
+}

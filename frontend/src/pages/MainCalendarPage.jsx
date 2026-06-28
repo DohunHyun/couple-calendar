@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchCategories } from "../api/categories";
-import { deleteEvent, fetchEvents, saveEvent } from "../api/events";
+import { deleteEvent, fetchEvents, saveEvent, updateEventShare } from "../api/events";
+import { syncDeviceCalendar } from "../native/deviceCalendar";
 import CalendarGrid from "../components/CalendarGrid";
 import EventEditorSheet from "../components/EventEditorSheet";
 import EventListSheet from "../components/EventListSheet";
@@ -136,6 +137,15 @@ export default function MainCalendarPage({
     }
     const monthStart = toIsoDate(new Date(targetDate.getFullYear(), targetDate.getMonth(), 1));
     const monthEnd = toIsoDate(new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0));
+    // 기기 캘린더 연동: 네이티브 + 선택 캘린더 있을 때만 best-effort 동기화(웹은 no-op).
+    try {
+      await syncDeviceCalendar(
+        new Date(targetDate.getFullYear(), targetDate.getMonth() - 1, 1),
+        new Date(targetDate.getFullYear(), targetDate.getMonth() + 2, 0, 23, 59, 59)
+      );
+    } catch {
+      /* 동기화 실패는 달력 로드를 막지 않는다 */
+    }
     const [calendarData, categoryData] = await Promise.all([
       fetchEvents(monthStart, monthEnd, syncGoogle),
       fetchCategories(),
@@ -208,6 +218,17 @@ export default function MainCalendarPage({
       },
       editingEvent?.id
     );
+    setEditorOpen(false);
+    setEditingEvent(null);
+    loadCalendar();
+  }
+
+  async function handleToggleShare(event, shared) {
+    if (previewMode || devTestMode) {
+      setEvents((prev) => prev.map((item) => (item.id === event.id ? { ...item, shared } : item)));
+      return;
+    }
+    await updateEventShare(event.id, shared);
     setEditorOpen(false);
     setEditingEvent(null);
     loadCalendar();
@@ -438,6 +459,7 @@ export default function MainCalendarPage({
         }}
         onSubmit={handleSaveEvent}
         onDelete={handleDeleteEvent}
+        onToggleShare={handleToggleShare}
       />
 
       <MonthSelectorCarousel

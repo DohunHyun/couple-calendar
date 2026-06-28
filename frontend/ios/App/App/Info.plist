@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>폰 기본 캘린더의 선택한 일정을 커플 캘린더에 가져오기 위해 캘린더 접근이 필요합니다.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>폰 기본 캘린더의 선택한 일정을 커플 캘린더에 가져오기 위해 캘린더 접근이 필요합니다.</string>
     <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>

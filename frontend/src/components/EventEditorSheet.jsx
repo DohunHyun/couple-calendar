@@ -30,6 +30,7 @@ export default function EventEditorSheet({
   event,
   onSubmit,
   onDelete,
+  onToggleShare,
 }) {
   const [form, setForm] = useState(initialForm);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -68,6 +69,7 @@ export default function EventEditorSheet({
     return null;
   }
 
+  const isDeviceEvent = event?.sourceType === "DEVICE";
   const selectedCategory = categories.find((category) => String(category.id) === form.categoryId);
   const selectedAlert = alertOptions.find((option) => option.value === form.alertOption);
   const categoryOptions = categories.map((category) => ({
@@ -83,17 +85,23 @@ export default function EventEditorSheet({
           <button type="button" onClick={onClose} className="text-xl font-bold text-zinc-700">
             ✕
           </button>
-          <h2 className="text-lg font-bold text-ink">{event ? "일정 수정" : "일정 등록"}</h2>
-          <button
-            type="button"
-            onClick={() => onSubmit(form)}
-            className="font-bold text-blue-600"
-          >
-            저장
-          </button>
+          <h2 className="text-lg font-bold text-ink">
+            {isDeviceEvent ? "기기 일정" : event ? "일정 수정" : "일정 등록"}
+          </h2>
+          {isDeviceEvent ? (
+            <span className="w-8" />
+          ) : (
+            <button
+              type="button"
+              onClick={() => onSubmit(form)}
+              className="font-bold text-blue-600"
+            >
+              저장
+            </button>
+          )}
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5">
+        <fieldset disabled={isDeviceEvent} className="m-0 flex-1 space-y-4 overflow-y-auto border-0 px-4 py-5">
           <div>
             <label className="mb-2 block text-sm font-medium text-zinc-500">제목</label>
             <input
@@ -196,9 +204,24 @@ export default function EventEditorSheet({
             />
             <p className="mt-1 text-right text-xs text-zinc-400">{form.content.length}/200</p>
           </div>
-        </div>
+        </fieldset>
 
-        {event ? (
+        {isDeviceEvent ? (
+          <div className="space-y-2 border-t border-line px-4 py-4">
+            <label className="flex items-center justify-between rounded-2xl bg-mist px-4 py-3">
+              <span className="text-sm font-medium text-ink">상대에게 공유</span>
+              <input
+                type="checkbox"
+                checked={!!event.shared}
+                onChange={(e) => onToggleShare?.(event, e.target.checked)}
+                className="h-5 w-5"
+              />
+            </label>
+            <p className="text-xs leading-5 text-zinc-400">
+              기기 캘린더 일정이에요. 제목·시간 수정과 삭제는 폰 기본 캘린더에서 해주세요.
+            </p>
+          </div>
+        ) : event ? (
           <div className="border-t border-line px-4 py-4">
             <button
               type="button"

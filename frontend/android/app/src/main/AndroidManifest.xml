@@ -32,4 +32,6 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 기기 캘린더 연동(읽기 전용) -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 </manifest>

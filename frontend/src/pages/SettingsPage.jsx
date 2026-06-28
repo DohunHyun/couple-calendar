@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { fetchCategories, saveCategory } from "../api/categories";
-import { updatePreferences, updateProfile } from "../api/settings";
+import { fetchSettings, updatePreferences, updateProfile } from "../api/settings";
 import CategoryEditorSheet from "../components/CategoryEditorSheet";
 import { getTestCategoriesForUser } from "../dev/testCalendarData";
+import {
+  isDeviceCalendarAvailable,
+  listDeviceCalendars,
+  getSelectedCalendarIds,
+  setSelectedCalendarIds,
+  syncDeviceCalendar,
+} from "../native/deviceCalendar";
 
 export default function SettingsPage({
   user,
@@ -21,6 +28,55 @@ export default function SettingsPage({
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [nickname, setNickname] = useState(user.nickname || "");
   const [anniversaryDate, setAnniversaryDate] = useState(user.anniversaryDate || "");
+
+  // 기기 캘린더 연동
+  const deviceSyncSupported = isDeviceCalendarAvailable();
+  const [deviceCalendars, setDeviceCalendars] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(getSelectedCalendarIds());
+  const [deviceDefaultShared, setDeviceDefaultShared] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
+
+  useEffect(() => {
+    if (!deviceSyncSupported || previewMode || devTestMode) {
+      return;
+    }
+    listDeviceCalendars()
+      .then(setDeviceCalendars)
+      .catch(() => setDeviceCalendars([]));
+    fetchSettings()
+      .then((data) => setDeviceDefaultShared(!!data.deviceSyncDefaultShared))
+      .catch(() => {});
+  }, [deviceSyncSupported, previewMode, devTestMode]);
+
+  function toggleCalendar(id) {
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((x) => x !== id)
+      : [...selectedIds, id];
+    setSelectedIds(next);
+    setSelectedCalendarIds(next);
+  }
+
+  async function handleDeviceSync() {
+    setSyncing(true);
+    setSyncMessage("");
+    try {
+      const now = new Date();
+      const from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const to = new Date(now.getFullYear(), now.getMonth() + 2, 0, 23, 59, 59);
+      const result = await syncDeviceCalendar(from, to);
+      if (result) {
+        setSyncMessage(`동기화 완료 · ${result.upserted}건 반영`);
+        onRefreshCalendar?.();
+      } else {
+        setSyncMessage("연동할 캘린더를 먼저 선택해주세요.");
+      }
+    } catch (error) {
+      setSyncMessage("동기화 중 오류가 발생했어요.");
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   async function loadCategories() {
     if (devTestMode) {
@@ -128,6 +184,76 @@ export default function SettingsPage({
               />
             </label>
           </div>
+        </div>
+
+        <div className="rounded-[28px] border border-line p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-ink">기기 캘린더 연동</p>
+            {deviceSyncSupported ? (
+              <button
+                type="button"
+                onClick={handleDeviceSync}
+                disabled={syncing}
+                className="rounded-full bg-black px-4 py-1.5 text-xs font-semibold text-white disabled:bg-zinc-300"
+              >
+                {syncing ? "동기화 중…" : "지금 동기화"}
+              </button>
+            ) : null}
+          </div>
+
+          {!deviceSyncSupported ? (
+            <p className="mt-3 text-sm text-zinc-500">모바일 앱(iOS/Android)에서만 사용할 수 있어요.</p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              <p className="text-xs leading-5 text-zinc-500">
+                폰 기본 캘린더에서 가져올 캘린더를 선택하세요. 가져온 일정은 기본적으로 나만 보이고(PRIVATE), 일정별로 공유할 수 있어요.
+              </p>
+
+              {deviceCalendars.length === 0 ? (
+                <p className="text-sm text-zinc-400">캘린더가 없거나 권한이 필요해요. "지금 동기화"를 눌러 권한을 허용해주세요.</p>
+              ) : (
+                <div className="space-y-2">
+                  {deviceCalendars.map((calendar) => (
+                    <label
+                      key={calendar.id}
+                      className="flex items-center justify-between rounded-2xl bg-mist px-4 py-3"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="inline-block h-3 w-3 rounded-full"
+                          style={{ backgroundColor: calendar.color }}
+                        />
+                        <span className="text-sm">{calendar.title}</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(calendar.id)}
+                        onChange={() => toggleCalendar(calendar.id)}
+                      />
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <label className="flex items-center justify-between rounded-2xl bg-mist px-4 py-3">
+                <span className="text-sm">가져온 일정 기본 공유</span>
+                <input
+                  type="checkbox"
+                  checked={deviceDefaultShared}
+                  onChange={async (e) => {
+                    setDeviceDefaultShared(e.target.checked);
+                    try {
+                      await updatePreferences({ deviceSyncDefaultShared: e.target.checked });
+                    } catch {
+                      /* ignore */
+                    }
+                  }}
+                />
+              </label>
+
+              {syncMessage ? <p className="text-xs text-zinc-500">{syncMessage}</p> : null}
+            </div>
+          )}
         </div>
 
         <div className="rounded-[28px] border border-line p-5">

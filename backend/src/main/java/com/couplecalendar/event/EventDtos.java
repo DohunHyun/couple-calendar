@@ -39,7 +39,8 @@ public class EventDtos {
             String ownerNickname,
             boolean hidden,
             EventSourceType sourceType,
-            AlertOption alertOption
+            AlertOption alertOption,
+            boolean shared
     ) {}
 
     public record CalendarResponse(
@@ -53,4 +54,6 @@ public class EventDtos {
             String message,
             boolean deleted
     ) {}
+
+    public record ShareRequest(boolean shared) {}
 }

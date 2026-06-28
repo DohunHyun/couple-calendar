@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,10 +23,13 @@ public class EventController {
 
     private final CurrentUser currentUser;
     private final EventService eventService;
+    private final DeviceCalendarSyncService deviceCalendarSyncService;
 
-    public EventController(CurrentUser currentUser, EventService eventService) {
+    public EventController(CurrentUser currentUser, EventService eventService,
+                           DeviceCalendarSyncService deviceCalendarSyncService) {
         this.currentUser = currentUser;
         this.eventService = eventService;
+        this.deviceCalendarSyncService = deviceCalendarSyncService;
     }
 
     @GetMapping
@@ -63,5 +67,26 @@ public class EventController {
     ) {
         User user = currentUser.require(authentication);
         return eventService.delete(user, eventId, confirmSharedDelete);
+    }
+
+    /** 기기 캘린더 일정 배치 동기화 (폰 → 서비스, spec §8-A). */
+    @PostMapping("/device-sync")
+    public DeviceSyncDtos.DeviceSyncResponse deviceSync(
+            Authentication authentication,
+            @Valid @RequestBody DeviceSyncDtos.DeviceSyncRequest request
+    ) {
+        User user = currentUser.require(authentication);
+        return deviceCalendarSyncService.sync(user, request);
+    }
+
+    /** DEVICE 일정의 공유 여부 토글(작성자만). */
+    @PatchMapping("/{eventId}/share")
+    public EventDtos.EventResponse updateShare(
+            Authentication authentication,
+            @PathVariable Long eventId,
+            @RequestBody EventDtos.ShareRequest request
+    ) {
+        User user = currentUser.require(authentication);
+        return eventService.updateShared(user, eventId, request.shared());
     }
 }

@@ -32,6 +32,10 @@ public class UserSetting extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean profileCompleted = false;
 
+    // 기기 캘린더 동기화 일정의 기본 공개범위. false=PRIVATE(기본), true=SHARED.
+    @Column(nullable = false)
+    private boolean deviceSyncDefaultShared = false;
+
     protected UserSetting() {
     }
 
@@ -69,5 +73,13 @@ public class UserSetting extends BaseTimeEntity {
 
     public void setProfileCompleted(boolean profileCompleted) {
         this.profileCompleted = profileCompleted;
+    }
+
+    public boolean isDeviceSyncDefaultShared() {
+        return deviceSyncDefaultShared;
+    }
+
+    public void setDeviceSyncDefaultShared(boolean deviceSyncDefaultShared) {
+        this.deviceSyncDefaultShared = deviceSyncDefaultShared;
     }
 }

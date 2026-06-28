@@ -36,6 +36,10 @@ public class Category extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // 기기 캘린더 연동 카테고리의 매핑 키(기기 캘린더 ID). 일반 카테고리는 null.
+    @Column(length = 255)
+    private String externalCalendarId;
+
     protected Category() {
     }
 
@@ -44,6 +48,15 @@ public class Category extends BaseTimeEntity {
         this.colorHex = colorHex;
         this.type = type;
         this.user = user;
+    }
+
+    public Category(String name, String colorHex, CategoryType type, User user, String externalCalendarId) {
+        this(name, colorHex, type, user);
+        this.externalCalendarId = externalCalendarId;
+    }
+
+    public String getExternalCalendarId() {
+        return externalCalendarId;
     }
 
     public Long getId() {

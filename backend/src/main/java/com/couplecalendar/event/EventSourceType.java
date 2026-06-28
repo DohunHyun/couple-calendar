@@ -3,5 +3,6 @@ package com.couplecalendar.event;
 public enum EventSourceType {
     LOCAL,
     GOOGLE,
-    GOOGLE_HOLIDAY
+    GOOGLE_HOLIDAY,
+    DEVICE
 }

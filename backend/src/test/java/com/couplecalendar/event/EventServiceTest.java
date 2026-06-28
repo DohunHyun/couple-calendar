@@ -70,6 +70,40 @@ class EventServiceTest {
     }
 
     @Test
+    void list_상대의_DEVICE일정은_SHARED만_보인다() {
+        Couple couple = couple(1);
+        User owner = user(1, couple);
+        User partner = user(2, couple);
+        Category cat = category(10, CategoryType.PRIVATE, owner);
+        Event devicePrivate = deviceEvent(200, owner, cat, false);
+        Event deviceShared = deviceEvent(201, owner, cat, true);
+
+        when(userSettingRepository.findByUser(partner)).thenReturn(Optional.of(new UserSetting(partner)));
+        when(eventRepository.findByStartAtLessThanEqualAndEndAtGreaterThanEqual(any(), any()))
+                .thenReturn(List.of(devicePrivate, deviceShared));
+
+        EventDtos.CalendarResponse res = eventService.list(partner, LocalDate.now(), LocalDate.now(), false);
+
+        assertThat(res.events()).extracting(EventDtos.EventResponse::id).containsExactly(201L);
+    }
+
+    @Test
+    void list_본인의_DEVICE_PRIVATE일정은_본인에게_보인다() {
+        Couple couple = couple(1);
+        User owner = user(1, couple);
+        Category cat = category(10, CategoryType.PRIVATE, owner);
+        Event devicePrivate = deviceEvent(200, owner, cat, false);
+
+        when(userSettingRepository.findByUser(owner)).thenReturn(Optional.of(new UserSetting(owner)));
+        when(eventRepository.findByStartAtLessThanEqualAndEndAtGreaterThanEqual(any(), any()))
+                .thenReturn(List.of(devicePrivate));
+
+        EventDtos.CalendarResponse res = eventService.list(owner, LocalDate.now(), LocalDate.now(), false);
+
+        assertThat(res.events()).extracting(EventDtos.EventResponse::id).containsExactly(200L);
+    }
+
+    @Test
     void delete_구글일정은삭제대신숨김처리된다() {
         User u = user(1, null);
         Event google = event(100, u, category(10, CategoryType.PRIVATE, u), EventSourceType.GOOGLE);
@@ -166,6 +200,12 @@ class EventServiceTest {
         LocalDateTime now = LocalDateTime.now();
         Event e = new Event("title", "content", true, now, now, category, owner, source, AlertOption.NONE, null, null);
         ReflectionTestUtils.setField(e, "id", id);
+        return e;
+    }
+
+    private Event deviceEvent(long id, User owner, Category category, boolean shared) {
+        Event e = event(id, owner, category, EventSourceType.DEVICE);
+        e.setShared(shared);
         return e;
     }
 

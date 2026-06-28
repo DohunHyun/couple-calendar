@@ -12,7 +12,8 @@ public class SettingsDtos {
 
     public record PreferenceRequest(
             Boolean googleVisible,
-            Boolean ddayVisible
+            Boolean ddayVisible,
+            Boolean deviceSyncDefaultShared
     ) {}
 
     public record SettingsResponse(
@@ -20,6 +21,7 @@ public class SettingsDtos {
             LocalDate anniversaryDate,
             boolean googleVisible,
             boolean ddayVisible,
-            boolean profileCompleted
+            boolean profileCompleted,
+            boolean deviceSyncDefaultShared
     ) {}
 }

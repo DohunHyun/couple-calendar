@@ -62,6 +62,11 @@ public class Event extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean alertSent = false;
 
+    // DEVICE 일정의 공유 여부(이벤트 레벨, sticky override). 기본 false=PRIVATE.
+    // 비DEVICE 일정은 기존 카테고리 타입 기반 가시성을 따른다.
+    @Column(nullable = false)
+    private boolean shared = false;
+
     @Column(length = 255)
     private String externalEventId;
 
@@ -139,6 +144,14 @@ public class Event extends BaseTimeEntity {
         this.alertSent = true;
     }
 
+    public boolean isShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+
     public String getExternalEventId() {
         return externalEventId;
     }
@@ -178,5 +191,20 @@ public class Event extends BaseTimeEntity {
         this.externalCalendarId = externalCalendarId;
         this.hidden = false;
         this.alertOption = AlertOption.NONE;
+    }
+
+    /**
+     * 기기 캘린더에서 재동기화. 제목·시간·카테고리는 기기 값으로 갱신하되,
+     * 사용자가 준 공유 설정(shared)과 알림 옵션은 유지(sticky). 숨김 해제(기기에 다시 존재).
+     */
+    public void syncFromDevice(String title, String content, boolean allDay, LocalDateTime startAt, LocalDateTime endAt,
+                               Category category) {
+        this.title = title;
+        this.content = content;
+        this.allDay = allDay;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.category = category;
+        this.hidden = false;
     }
 }

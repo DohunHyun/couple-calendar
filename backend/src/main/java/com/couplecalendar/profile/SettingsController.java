@@ -35,7 +35,8 @@ public class SettingsController {
                 user.getCouple() != null ? user.getCouple().getAnniversaryDate() : null,
                 setting.isGoogleVisible(),
                 setting.isDdayVisible(),
-                setting.isProfileCompleted()
+                setting.isProfileCompleted(),
+                setting.isDeviceSyncDefaultShared()
         );
     }
 
@@ -55,7 +56,8 @@ public class SettingsController {
                 user.getCouple() != null ? user.getCouple().getAnniversaryDate() : null,
                 setting.isGoogleVisible(),
                 setting.isDdayVisible(),
-                setting.isProfileCompleted()
+                setting.isProfileCompleted(),
+                setting.isDeviceSyncDefaultShared()
         );
     }
 
@@ -69,13 +71,17 @@ public class SettingsController {
         if (request.ddayVisible() != null) {
             setting.setDdayVisible(request.ddayVisible());
         }
+        if (request.deviceSyncDefaultShared() != null) {
+            setting.setDeviceSyncDefaultShared(request.deviceSyncDefaultShared());
+        }
         userSettingRepository.save(setting);
         return new SettingsDtos.SettingsResponse(
                 user.getNickname(),
                 user.getCouple() != null ? user.getCouple().getAnniversaryDate() : null,
                 setting.isGoogleVisible(),
                 setting.isDdayVisible(),
-                setting.isProfileCompleted()
+                setting.isProfileCompleted(),
+                setting.isDeviceSyncDefaultShared()
         );
     }
 

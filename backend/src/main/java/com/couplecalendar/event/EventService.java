@@ -136,6 +136,17 @@ public class EventService {
         return new EventDtos.DeleteDecisionResponse(false, "Deleted", true);
     }
 
+    @Transactional
+    public EventDtos.EventResponse updateShared(User user, Long eventId, boolean shared) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Event not found"));
+        if (!event.getOwner().getId().equals(user.getId())) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "Only the owner can change sharing");
+        }
+        event.setShared(shared);
+        return toResponse(event);
+    }
+
     private Category loadAccessibleCategory(User user, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Category not found"));
@@ -163,9 +174,17 @@ public class EventService {
         if (event.getOwner().getId().equals(user.getId())) {
             return true;
         }
-        return user.getCouple() != null
+        boolean sameCouple = user.getCouple() != null
                 && event.getOwner().getCouple() != null
                 && user.getCouple().getId().equals(event.getOwner().getCouple().getId());
+        if (!sameCouple) {
+            return false;
+        }
+        // DEVICE 일정은 이벤트 레벨 공유 플래그로 상대 가시성 판정(기본 PRIVATE → 상대에게 안 보임).
+        if (event.getSourceType() == EventSourceType.DEVICE) {
+            return event.isShared();
+        }
+        return true;
     }
 
     private boolean canMutateEvent(User user, Event event) {
@@ -194,7 +213,8 @@ public class EventService {
                 event.getOwner().getNickname(),
                 event.isHidden(),
                 event.getSourceType(),
-                event.getAlertOption()
+                event.getAlertOption(),
+                event.isShared()
         );
     }
 
